@@ -3,17 +3,17 @@
 internal class Day01
 {
     const string inputPath = @"Day01/Input.txt";
-    private static readonly Dictionary<string, char> letters = new()
+    private static readonly Dictionary<string, int> letters = new()
     {
-        { "one", '1' }, { "1", '1' },
-        { "two", '2' }, { "2", '2' },
-        { "three", '3' }, { "3", '3' },
-        { "four", '4' }, { "4", '4' },
-        { "five", '5' }, { "5", '5' },
-        { "six", '6' }, { "6", '6' },
-        { "seven", '7' }, { "7", '7' },
-        { "eight", '8' }, { "8", '8' },
-        { "nine", '9' }, { "9", '9' }
+        { "one", 1 }, { "1", 1 },
+        { "two", 2 }, { "2", 2 },
+        { "three", 3 }, { "3", 3 },
+        { "four", 4 }, { "4", 4 },
+        { "five", 5 }, { "5", 5 },
+        { "six", 6 }, { "6", 6 },
+        { "seven", 7 }, { "7", 7 },
+        { "eight", 8 }, { "8", 8 },
+        { "nine", 9 }, { "9", 9 }
     };
 
     internal static void Task1and2() 
@@ -25,10 +25,10 @@ internal class Day01
 
         foreach (String line in lines)
         {
-            char first = line.First(Char.IsDigit);
-            char last = line.Last(Char.IsDigit);
+            int first = line.First(Char.IsDigit) - 48;
+            int last = line.Last(Char.IsDigit) - 48;
 
-            calibValueTask1 += int.Parse($"{first}{last}");
+            calibValueTask1 += (first * 10 + last);
             calibValueTask2 += StringToDigits(line);
         }
 
@@ -40,10 +40,10 @@ internal class Day01
     {
         int idxFirst = int.MaxValue;
         int idxLast = int.MinValue;
-        char first = '0';
-        char last = '0';
+        int first = 0;
+        int last = 0;
 
-        foreach(KeyValuePair<String, char> keyValue in letters)
+        foreach(KeyValuePair<String, int> keyValue in letters)
         {
             int idx1 = line.IndexOf(keyValue.Key);
             int idx2 = line.LastIndexOf(keyValue.Key);
@@ -51,7 +51,7 @@ internal class Day01
             if (idx1 >= 0 && idx1 < idxFirst)
             {
                 idxFirst = idx1;
-                first = keyValue.Value;
+                first = keyValue.Value * 10;
             }
 
             if (idx2 >= 0 && idx2 > idxLast)
@@ -61,6 +61,6 @@ internal class Day01
             }
         }
 
-        return int.Parse($"{first}{last}");
+        return first + last;
     }
 }
