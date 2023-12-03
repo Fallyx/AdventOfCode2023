@@ -37,16 +37,16 @@ internal class Day03
                 string lineMiddle = lines[y].Substring(subStringStart, subStringEnd);
                 string lineBottom = (y + 1 < lines.Count ? lines[y + 1].Substring(subStringStart, subStringEnd) : string.Empty);
 
-                (bool possible, char symbol, int xRelative, int yRelative) parsedNumber = IsPartNumber(lineTop, lineMiddle, lineBottom);
+                (bool possible, List<Vector2> relativeCoords) parsedNumber = IsPartNumber(lineTop, lineMiddle, lineBottom);
 
                 if (parsedNumber.possible)
                 {
                     int numberInt = int.Parse(number);
                     partNumSum += numberInt;
-                    if (parsedNumber.symbol == '*')
+                    foreach (Vector2 coord in parsedNumber.relativeCoords)
                     {
-                        if (x - 1 < 0) parsedNumber.xRelative++;
-                        Vector2 gearPos = new Vector2(x + parsedNumber.xRelative, y + parsedNumber.yRelative);
+                        int leftEdgeMod = (x - 1 < 0 ? 1 : 0);
+                        Vector2 gearPos = new Vector2(x + coord.X + leftEdgeMod, y + coord.Y);
                         if (gears.ContainsKey(gearPos))
                             gears[gearPos].Add(numberInt);
                         else
@@ -60,7 +60,7 @@ internal class Day03
 
         Console.WriteLine($"Task 1: {partNumSum}");
 
-        int gearScore = 0;
+        double gearScore = 0;
 
         foreach (KeyValuePair<Vector2, List<int>> gear in gears)
         {
@@ -71,26 +71,42 @@ internal class Day03
         Console.WriteLine($"Task 2: {gearScore}");
     }
 
-    private static (bool possible, char symbol, int xRelative, int yRelative) IsPartNumber(string lineTop, string lineMiddle, string lineBototm)
+    private static (bool possible, List<Vector2> relativeCoords) IsPartNumber(string lineTop, string lineMiddle, string lineBototm)
     {
+        List<Vector2> relativeCoords = [];
+        bool hasSymbols = false;
+
         for (int x = 0; x < lineTop.Length; x++)
         {
-            if (lineTop[x] != '.' && !Char.IsDigit(lineTop[x])) 
-                return (true, lineTop[x], x - 1, -1);
+            if (lineTop[x] != '.' && !Char.IsDigit(lineTop[x]))
+            {
+                hasSymbols = true;
+                if (lineTop[x] == '*')
+                    relativeCoords.Add(new Vector2(x - 1, -1));
+            }
+                
         }
 
         for (int x = 0; x < lineMiddle.Length; x++)
         {
-            if (lineMiddle[x] != '.' && !Char.IsDigit(lineMiddle[x])) 
-                return (true, lineMiddle[x], x - 1, 0);
+            if (lineMiddle[x] != '.' && !Char.IsDigit(lineMiddle[x]))
+            {
+                hasSymbols = true;
+                if (lineMiddle[x] == '*')
+                    relativeCoords.Add(new Vector2(x - 1, 0));
+            }
         }
 
         for (int x = 0; x < lineBototm.Length; x++)
         {
             if (lineBototm[x] != '.' && !Char.IsDigit(lineBototm[x]))
-                return (true, lineBototm[x], x - 1, 1);
+            {
+                hasSymbols = true;
+                if (lineBototm[x] == '*')
+                    relativeCoords.Add(new Vector2(x - 1, 1));
+            }
         }
 
-        return (false, '.', int.MinValue, int.MinValue);
+        return (hasSymbols, relativeCoords);
     }
 }
