@@ -42,6 +42,9 @@ namespace AdventOfCode2023
                 case 3:
                     Day03.Day03.Task1and2();
                     break;
+                case 4:
+                    Day04.Day04.Task1and2();
+                    break;
                 default:
                     break;
             }
