@@ -1,4 +1,6 @@
-﻿namespace AdventOfCode2023.Day05;
+﻿using System.Xml.Linq;
+
+namespace AdventOfCode2023.Day05;
 
 internal class Day05
 {
@@ -25,11 +27,10 @@ internal class Day05
         }
 
         long minLocation = int.MaxValue;
-
+        
         foreach(long seed in seeds)
         {
             long currentValue = seed;
-
             for(int i = 0; i <  almanacMaps.Length; i++)
             {
                 AlmanacMap map = almanacMaps[i].FirstOrDefault(x => x.SourceStart <= currentValue && x.SourceEnd >= currentValue, new AlmanacMap());
@@ -45,51 +46,62 @@ internal class Day05
 
         for (int i = 0; i < seeds.Count; i += 2)
         {
-            List<SeedRange> seedsTask2 = [new(seeds[i], seeds[i] + seeds[i + 1])];
+            LinkedList<SeedRange> seedRanges = new([new(seeds[i], seeds[i] + seeds[i + 1])]);
 
             for (int x = 0; x < almanacMaps.Length; x++)
             {
-                List<SeedRange> splitList = [];
+                LinkedList<SeedRange> splitLinkedList = new();
 
-                foreach (SeedRange sr in seedsTask2)
+                foreach (AlmanacMap map in almanacMaps[x]) 
                 {
-                    foreach (AlmanacMap map in almanacMaps[x])
+                    List<SeedRange> splitList = [];
+                    LinkedListNode<SeedRange> node = seedRanges.First;
+
+                    while (node != null)
                     {
-                        if (sr.Start > map.SourceEnd || sr.End < map.SourceStart)
+                        if (node.Value.Start > map.SourceEnd || node.Value.End < map.SourceStart)
                         {
-                            splitList.Add(sr);
+                            node = node.Next;
+                            continue;
                         }
-                        else if (sr.Start > map.SourceStart && sr.End < map.SourceEnd)
+                        else if (node.Value.Start >= map.SourceStart && node.Value.End <= map.SourceEnd)
                         {
-                            splitList.Add(new(sr.Start += map.Value, sr.End += map.Value));
+                            splitLinkedList.AddLast(new SeedRange(node.Value.Start += map.Value, node.Value.End += map.Value));
                         }
-                        else if (sr.Start > map.SourceStart && sr.End > map.SourceEnd)
+                        else if (node.Value.Start >= map.SourceStart && node.Value.End >= map.SourceEnd)
                         {
-                            splitList.Add(new(sr.Start + map.Value, map.SourceEnd + map.Value));
-                            splitList.Add(new(map.SourceEnd + 1, sr.End));
+                            splitLinkedList.AddLast(new SeedRange(node.Value.Start + map.Value, map.SourceEnd + map.Value));
+                            seedRanges.AddLast(new SeedRange(map.SourceEnd + 1, node.Value.End));
                         }
-                        else if (sr.Start < map.SourceStart && sr.End < map.SourceEnd)
+                        else if (node.Value.Start <= map.SourceStart && node.Value.End <= map.SourceEnd)
                         {
-                            splitList.Add(new(sr.Start, map.SourceStart - 1));
-                            splitList.Add(new(map.SourceStart + map.Value, sr.End + map.Value));
+                            seedRanges.AddLast(new SeedRange(node.Value.Start, map.SourceStart - 1));
+                            splitLinkedList.AddLast(new SeedRange(map.SourceStart + map.Value, node.Value.End + map.Value));
                         }
-                        else if (sr.Start < map.SourceStart && sr.End > map.SourceEnd)
+                        else if (node.Value.Start <= map.SourceStart && node.Value.End >= map.SourceEnd)
                         {
-                            splitList.Add(new(sr.Start, map.SourceStart - 1));
-                            splitList.Add(new(map.SourceStart + map.Value, map.SourceEnd + map.Value));
-                            splitList.Add(new(map.SourceEnd + 1, sr.End));
+                            seedRanges.AddLast(new SeedRange(node.Value.Start, map.SourceStart - 1));
+                            splitLinkedList.AddLast(new SeedRange(map.SourceStart + map.Value, map.SourceEnd + map.Value));
+                            seedRanges.AddLast(new SeedRange(map.SourceEnd + 1, node.Value.End));
                         }
-                    }
+
+                        var nextNode = node.Next;
+                        seedRanges.Remove(node);
+                        node = nextNode;
+                    }                    
                 }
 
-                seedsTask2 = splitList.Distinct().ToList();
+                var tmp = splitLinkedList.First;
+                while (tmp != null)
+                {
+                    var next = tmp.Next;
+                    splitLinkedList.Remove(tmp);
+                    seedRanges.AddLast(tmp);
+                    tmp = next;
+                }
             }
-
-            long minVal = seedsTask2.Min(x => x.Start);
-            if (minVal != 0 && minLocation > minVal)
-            {
-                minLocation = minVal;
-            }
+            long minVal = seedRanges.Min(x => x.Start);
+            if (minLocation > minVal) minLocation = minVal;
         }
 
         Console.WriteLine($"Task 2: {minLocation}");
