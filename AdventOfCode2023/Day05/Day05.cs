@@ -1,6 +1,4 @@
-﻿using System.Xml.Linq;
-
-namespace AdventOfCode2023.Day05;
+﻿namespace AdventOfCode2023.Day05;
 
 internal class Day05
 {
