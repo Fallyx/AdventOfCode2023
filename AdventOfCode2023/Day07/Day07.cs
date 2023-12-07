@@ -8,36 +8,26 @@ internal class Day07
     {
         List<String> lines = [.. File.ReadAllLines(inputPath)];
         List<Player> players = [];
+        List<Player> players2 = [];
 
         foreach (String line in lines)
         {
             players.Add(new(line));
+            players2.Add(new(line, true));
         }
 
         players.Sort();
+        players2.Sort();
         int totalWinning = 0;
+        int totalWinning2 = 0;
         for (int i = 0; i < players.Count; i++)
         {
             totalWinning += (i + 1) * players[i].Bid;
+            totalWinning2 += (i + 1) * players2[i].Bid;
         }
 
         Console.WriteLine($"Task 1: {totalWinning}");
-
-        players = [];
-
-        foreach (String line in lines)
-        {
-            players.Add(new(line, true));
-        }
-
-        players.Sort();
-        totalWinning = 0;
-        for (int i = 0; i < players.Count; i++)
-        {
-            totalWinning += (i + 1) * players[i].Bid;
-        }
-
-        Console.WriteLine($"Task 2: {totalWinning}");
+        Console.WriteLine($"Task 2: {totalWinning2}");
     }
 
     private class Player : IComparable<Player>
