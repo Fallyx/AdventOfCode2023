@@ -4,7 +4,7 @@ internal class Day06
 {
     const string inputPath = @"Day06/Input.txt";
 
-    internal static void Task1()
+    internal static void Task1and2()
     {
         List<String> lines = [.. File.ReadAllLines(inputPath)];
         List<int> time = lines[0].Split(":", StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries)[1].Split(" ", StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries).Select(int.Parse).ToList();
