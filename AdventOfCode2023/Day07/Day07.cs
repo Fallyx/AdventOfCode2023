@@ -46,11 +46,6 @@ internal class Day07
         {
             { 'A', 14 }, { 'K', 13 }, { 'Q', 12 }, { 'J' , 11 }, { 'T', 10 }, { '9', 9 }, { '8', 8 }, { '7', 7 }, { '6', 6 }, { '5', 5 }, { '4', 4 }, { '3', 3 }, { '2', 2 }
         };
-        private readonly Dictionary<char, int> cardValueTask2 = new()
-        {
-            { 'A', 14 }, { 'K', 13 }, { 'Q', 12 }, { 'J' , 1 }, { 'T', 10 }, { '9', 9 }, { '8', 8 }, { '7', 7 }, { '6', 6 }, { '5', 5 }, { '4', 4 }, { '3', 3 }, { '2', 2 }
-        };
-
 
         public String Hand { get; set; }
         public int[] CardValue { get; set; }
@@ -59,12 +54,11 @@ internal class Day07
 
         public Player(String line, bool joker = false)
         {
+            if (joker)
+                cardValue['J'] = 1;
             string[] split = line.Split(' ');
             Hand = split[0];
-            if (!joker)
-                CardValue = Hand.Select(c => cardValue[c]).ToArray();
-            else
-                CardValue = Hand.Select(c => cardValueTask2[c]).ToArray();
+            CardValue = Hand.Select(c => cardValue[c]).ToArray();
             Bid = int.Parse(split[1]);
 
             Dictionary<int, int> typeDict = [];
@@ -73,8 +67,8 @@ internal class Day07
             {
                 if (CardValue[i] == 1)
                     jMod++;
-                else if (typeDict.ContainsKey(CardValue[i]))
-                    typeDict[CardValue[i]]++;
+                else if (typeDict.TryGetValue(CardValue[i], out int value))
+                    typeDict[CardValue[i]] = ++value;
                 else
                     typeDict.Add(CardValue[i], 1);
             }
