@@ -4,7 +4,7 @@ internal class Day07
 {
     const string inputPath = @"Day07/Input.txt";
 
-    internal static void Task1()
+    internal static void Task1and2()
     {
         List<String> lines = [.. File.ReadAllLines(inputPath)];
         List<Player> players = [];
