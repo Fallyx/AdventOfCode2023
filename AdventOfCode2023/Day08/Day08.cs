@@ -1,6 +1,4 @@
-﻿using System.Collections.Generic;
-
-namespace AdventOfCode2023.Day08;
+﻿namespace AdventOfCode2023.Day08;
 
 internal class Day08
 {
@@ -10,7 +8,7 @@ internal class Day08
     {
         List<String> lines = [.. File.ReadAllLines(inputPath)];
         string path = lines[0];
-        Dictionary< string, Node> nodes = [];
+        Dictionary<string, Node> nodes = [];
         Dictionary<string, GhostNode> ghostNodes = [];
 
         for(int i = 2; i < lines.Count; i++)
@@ -24,6 +22,15 @@ internal class Day08
                 ghostNodes.Add(key, new(node, key));
         }
 
+        Console.WriteLine($"Task 1: {SolveTask1(path, nodes)}");
+
+        SolveTask2(path, nodes, ghostNodes);
+        long[] ghostSteps = ghostNodes.Select(gn => gn.Value.Steps).ToArray();
+        Console.WriteLine($"Task 2: {ghostSteps.Aggregate((a, b) => a * b / GCD(a, b))}");
+    }
+
+    private static int SolveTask1(string path, Dictionary<string, Node> nodes)
+    {
         int idx = 0;
         int steps = 0;
         bool endFound = false;
@@ -41,14 +48,18 @@ internal class Day08
                 endFound = true;
             idx = (idx + 1) % path.Length;
         }
-        Console.WriteLine($"Task 1: {steps}");
 
-        idx = 0;
-        steps = 0;
+        return steps;
+    }
+
+    private static void SolveTask2(string path, Dictionary<string, Node> nodes, Dictionary<string, GhostNode> ghostNodes)
+    {
+        int idx = 0;
+        int steps = 0;
         while (ghostNodes.Any(v => v.Value.Found != true))
         {
             steps++;
-            foreach(KeyValuePair<string, GhostNode> ghostNode in ghostNodes)
+            foreach (KeyValuePair<string, GhostNode> ghostNode in ghostNodes)
             {
                 if (ghostNode.Value.Found)
                     continue;
@@ -67,11 +78,8 @@ internal class Day08
 
             idx = (idx + 1) % path.Length;
         }
-
-        long[] ghostSteps = ghostNodes.Select(gn => gn.Value.Steps).ToArray();
-        
-        Console.WriteLine($"Task 2: {ghostSteps.Aggregate((a, b) => a * b / GCD(a, b))}");
     }
+
     private static long GCD(long a, long b)
     {
         return b == 0 ? a : GCD(b, a % b);
