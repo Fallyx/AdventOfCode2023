@@ -15,10 +15,13 @@ internal class Day09
             List<int[]> oasis = [];
             oasis.Add(line.Split(" ", StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries).Select(int.Parse).ToArray());
 
-            int[] newNums = [1];
-            while (!newNums.All(n => n == 0))
+            while (!oasis.Last().All(n => n == 0))
             {
-                newNums = Sequence(oasis.Last());
+                int[] newNums = new int[oasis.Last().Length - 1];
+                for (int i = 0; i < newNums.Length; i++)
+                {
+                    newNums[i] = oasis.Last()[i + 1] - oasis.Last()[i];
+                }
                 oasis.Add(newNums);
             }
 
@@ -28,7 +31,6 @@ internal class Day09
             {
                 extrapolatedNumberRight += oasis[i].Last();
                 extrapolatedNumberLeft = oasis[i].First() - extrapolatedNumberLeft;
-                Console.WriteLine(extrapolatedNumberLeft);
             }
 
             sumPredictionValues += extrapolatedNumberRight;
@@ -37,17 +39,5 @@ internal class Day09
 
         Console.WriteLine($"Task 1: {sumPredictionValues}");
         Console.WriteLine($"Task 2: {sumHistoryValues}");
-    }
-
-    private static int[] Sequence(int[] numbers)
-    {
-        int[] newNumbers = new int[numbers.Length - 1];
-
-        for (int i = 0; i < newNumbers.Length; i++)
-        {
-            newNumbers[i] = numbers[i + 1] - numbers[i];
-        }
-
-        return newNumbers;
     }
 }
