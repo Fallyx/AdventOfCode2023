@@ -80,6 +80,7 @@ namespace AdventOfCode2023
                     Day15.Day15.Task1and2();
                     break;
                 case 16:
+                    Day16.Day16.Task1and2();
                     break;
                 default:
                     break;
